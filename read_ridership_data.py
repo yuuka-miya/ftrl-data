@@ -68,5 +68,27 @@ df['TOTAL_TAP_OUT_VOLUME'] = (df['TOTAL_TAP_OUT_VOLUME'] / df['multiplier']).rou
 df.to_csv(os.path.join(os.getcwd(), month, "transport_node_train_" + month + "_wholemonth_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
 df1.to_csv(os.path.join(os.getcwd(), month, "transport_node_train_" + month + "_wholemonth-nodays_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
 
+#now for orig dest
+
+in_file = os.path.join(os.getcwd(), month, "origin_destination_train_" + month + ".csv")
+
+df = pd.read_csv(in_file)
+df = df.drop(columns=['TIME_PER_HOUR'])
+
+df['multiplier'] = df['DAY_TYPE']
+
+df = df.replace({'ORIGIN_PT_CODE': interchange_codes, 'DESTINATION_PT_CODE': interchange_codes, 'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
+#df = df.replace({'PT_CODE': interchange_codes})
+
+df1 = df.groupby(['ORIGIN_PT_CODE']).sum()
+df1['TOTAL_TRIPS'] = (df1['TOTAL_TRIPS'] / total).round(0)
+
+df = df.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).agg({'TOTAL_TRIPS': np.sum, 'multiplier': "first"})
+
+df['TOTAL_TRIPS'] = (df['TOTAL_TRIPS'] / df['multiplier']).round(0)
+
+df.to_csv(os.path.join(os.getcwd(), month, "origin_destination_train_" + month + "_wholemonth_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
+df1.to_csv(os.path.join(os.getcwd(), month, "origin_destination_train_" + month + "_wholemonth-nodays_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
+
 
 
