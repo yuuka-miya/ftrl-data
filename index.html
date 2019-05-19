@@ -1,1 +1,36 @@
-Hello World
+<!DOCTYPE html>
+
+
+Station: <input type="text" id="stncode"><br>
+<button type="button" onclick="validateForm()">Submit</button><br>
+
+<p id="rawdebug"></p>
+
+<script>
+
+var URL = "https://yuuka-ftrl-v2.azurewebsites.net/api/HttpTrigger?code=hxeq3HWNM6uWVwKM34QeZbE6l7kH26tNfwZfYMDKF5r4a7ara5blFQ==&ptcode="
+//var URL = "https://localhost:7071/api/HttpTrigger?ptcode="
+
+function validateForm() {
+  var x = document.getElementById("stncode").value;
+  if (x == "") {
+    alert("Station code must be filled out");
+    return false;
+  }
+  httpGetAsync(URL + x, function(responseText) {
+  console.log(responseText);
+  document.getElementById("rawdebug").innerHTML = responseText;
+  });
+} 
+
+function httpGetAsync(theUrl, callback)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    }
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.send(null);
+}
+</script>
