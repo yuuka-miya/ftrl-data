@@ -1,0 +1,46 @@
+{
+	"interchange_codes": {
+		"BP1": "NS4",
+		"CC15": "NS17",
+		"CE2": "NS27",
+		"CC9": "EW8",
+		"DT14": "EW12",
+		"NE3": "EW16",
+		"CC22": "EW21",
+		"DT35": "CG1",
+		"CC29": "NE1",
+		"DT19": "NE4",
+		"DT12": "NE7",
+		"CC13": "NE12",
+		"STC": "NE16",
+		"PTC": "NE17",
+		"DT26": "CC10",
+		"DT9": "CC19",
+		"DT16": "CE1",
+		"TE2": "NS9",
+		"TE9": "CC17",
+		"TE11": "DT10",
+		"TE14": "NS22",
+		"TE17": "EW16",
+		"TE20": "NS27",
+		"TE31": "DT37",
+		"FL1": "CC32",
+		"JS1": "NS4",
+		"JS8": "EW27",
+		"JE5": "EW24-NS1"
+
+	},
+  "data_packs": {
+    "train": {
+    "201807": "origin_destination_train_201807_wholemonth_20181105124707.csv",
+    "201808": "origin_destination_train_201808_wholemonth_20181105124738.csv",
+    "201809": "origin_destination_train_201809_wholemonth_20181105124800.csv",
+    "201810": "origin_destination_train_201810_wholemonth_20181118211105.csv",
+    "201811": "origin_destination_train_201811_wholemonth_20190111225135.csv",
+    "201812": "origin_destination_train_201812_wholemonth_20190202233132.csv",
+    "201901": "origin_destination_train_201901_wholemonth_20190423123205.csv",
+    "201902": "origin_destination_train_201902_wholemonth_20190423123230.csv",
+    "201903": "origin_destination_train_201903_wholemonth_20190423123747.csv"
+    }
+  }
+}
