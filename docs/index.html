@@ -18,6 +18,9 @@ Station: <input type="text" id="stncode">
   <option value="1">From this station</option>
   <option value="2">To this station</option>
 </select>
+
+<select class="custom-select" id="period">
+</select>
 <button type="button" class="btn btn-primary" onclick="validateForm()">Go</button>
 </form>
 
@@ -33,6 +36,18 @@ Station: <input type="text" id="stncode">
 </table>
 
 <script>
+
+httpGetAsync("https://github.com/yuuka-miya/ftrl-data/raw/master/processed_data/data_list.json", function(responseText) {
+  data = JSON.parse(responseText);
+  
+    var period_select = document.getElementById("period");
+    var i = 0;
+    for (let element of data.data_packs.train) {
+    var option = document.createElement("option" + i);
+    option.text = "element";
+    period_select.add(option);
+  }
+  });
 
 var URL = "https://yuuka-ftrl-v2.azurewebsites.net/api/HttpTrigger?code=hxeq3HWNM6uWVwKM34QeZbE6l7kH26tNfwZfYMDKF5r4a7ara5blFQ==&ptcode="
 //var URL = "https://localhost:7071/api/HttpTrigger?ptcode="
