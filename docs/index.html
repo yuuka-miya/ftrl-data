@@ -7,22 +7,28 @@
 
 
 <nav class="navbar navbar-light bg-light">
-<form class="form-inline">
-Station: <input type="text" id="stncode">
- Day type: <select class="custom-select" id="type">
+<form class="form-inline" class="mr-2">
+
+Station: <input class="form-control mr-sm-2" type="text" id="stncode">
+ Day type: <select class="custom-select mr-sm-2" id="type">
   <option value="1" selected>Weekdays</option>
   <option value="2">Weekends</option>
 </select>
- Direction: <select class="custom-select" id="direction">
+ Direction: <select class="custom-select mr-sm-2" id="direction">
   <option value="0" selected>From/to this station</option>
   <option value="1">From this station</option>
   <option value="2">To this station</option>
 </select>
 
- Time period: <select class="custom-select" id="period">
+ Time period: <select class="custom-select mr-sm-2" id="period">
 </select>
-<button type="button" class="btn btn-primary" onclick="validateForm()">Go</button>
+<button type="button" class="btn btn-primary mr-sm-2" onclick="validateForm()">Go</button>
+
 </form>
+
+<div class="navbar-text">
+      v20190522.1 by <a href="https://github.com/yuuka-miya/ftrl-data/">@yuuka-miya on Github</a>
+    </div>
 
 </nav>
 
