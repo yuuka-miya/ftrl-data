@@ -51,7 +51,6 @@ in_file = os.path.join(os.getcwd(), "raw_data", month, "transport_node_train_" +
 
 df = pd.read_csv(in_file)
 df = df.drop(columns=['TIME_PER_HOUR'])
-df = df[df['TOTAL_TRIPS'] !=0]
 
 df['multiplier'] = df['DAY_TYPE']
 

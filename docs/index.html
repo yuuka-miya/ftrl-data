@@ -26,6 +26,10 @@ Station: <input class="form-control mr-sm-2" type="text" id="stncode">
 
 </form>
 
+<div class="spinner-border" id="loadIndicator" role="status">
+  <span class="sr-only">Loading...</span>
+</div>
+
 <div class="navbar-text">
       v20190522.1 by <a href="https://github.com/yuuka-miya/ftrl-data/">@yuuka-miya on Github</a>
     </div>
@@ -34,7 +38,7 @@ Station: <input class="form-control mr-sm-2" type="text" id="stncode">
 
 <p id="rawdebug"></p>
 
-<table id="mytable">
+<table id="mytable" class="table">
   <th>Day type</th>
   <th>From</th>
   <th>To</th>
@@ -42,6 +46,9 @@ Station: <input class="form-control mr-sm-2" type="text" id="stncode">
 </table>
 
 <script>
+
+
+  document.getElementById("loadIndicator").style.visibility = "hidden"; 
 
 httpGetAsync("https://yuuka-miya.github.io/ftrl-data/data_list.json", function(responseText) {
   data = JSON.parse(responseText);
@@ -71,6 +78,8 @@ function validateForm() {
     return false;
   }
   console.log("retrieving");
+  
+  document.getElementById("loadIndicator").style.visibility = "visible"; 
   httpGetAsync(URL + x + "&type=" + daytype + "&direction=" + direction + "&period=" + period, function(responseText) {
   //console.log(responseText);
   //document.getElementById("rawdebug").innerHTML = responseText;
@@ -86,6 +95,8 @@ function validateForm() {
       let text = document.createTextNode(element[key]);
       cell.appendChild(text);
     }
+    
+  document.getElementById("loadIndicator").style.visibility = "hidden"; 
   }
   });
 } 
