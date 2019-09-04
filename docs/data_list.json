@@ -42,7 +42,9 @@
     "201902": "origin_destination_train_201902_wholemonth_20190423123230.csv",
     "201903": "origin_destination_train_201903_wholemonth_20190423123747.csv",
     "201904": "origin_destination_train_201904_wholemonth_20190630222050.csv",
-    "201905": "origin_destination_train_201905_wholemonth_20190630222136.csv"
+    "201905": "origin_destination_train_201905_wholemonth_20190630222136.csv",
+    "201906": "origin_destination_train_201906_wholemonth_20190807182207.csv",
+    "201907": "origin_destination_train_201907_wholemonth_20190904192202.csv"
     }
   }
 }
