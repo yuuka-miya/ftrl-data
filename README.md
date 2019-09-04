@@ -8,6 +8,8 @@ The data available in the `processed_data` folder is released under the Singapor
 
 Format of said processed data contains the same fields as you'll find in the LTA's documentation.
 
+The exception is the byhour sheet, which has been converted into an easy-to-see chart layout. Header names remain the same though.
+
 ---
 
 The scripts themselves are licensed under the CC-BY license. 
