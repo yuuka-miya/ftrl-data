@@ -58,6 +58,7 @@ df['TOTAL_TAP_OUT_VOLUME'] = (df['TOTAL_TAP_OUT_VOLUME'] / df['multiplier']).rou
 
 df1 = df.drop(columns=['multiplier'])
 df = df.groupby(['DAY_TYPE', 'PT_CODE']).agg({'TOTAL_TAP_IN_VOLUME': np.sum, 'TOTAL_TAP_OUT_VOLUME': np.sum, 'multiplier': "first"})
+df = df.drop(columns=['multiplier'])
 
 #new_index = pd.MultiIndex.from_frame(df[['PT_CODE', 'DAY_TYPE']])
 df1 = pd.pivot_table(df1, index=['PT_CODE', 'DAY_TYPE'], columns=["TIME_PER_HOUR"], aggfunc={'TOTAL_TAP_IN_VOLUME': np.sum, 'TOTAL_TAP_OUT_VOLUME': np.sum}, fill_value=0)
@@ -81,6 +82,7 @@ df = df[df['TOTAL_TRIPS'] !=0]
 df1 = df.drop(columns=['multiplier'])
 
 df = df.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).agg({'TOTAL_TRIPS': np.sum, 'multiplier': "first"})
+df = df.drop(columns=['multiplier'])
 
 df1 = pd.pivot_table(df1, index=['ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'DAY_TYPE'], columns=["TIME_PER_HOUR"], aggfunc={'TOTAL_TRIPS': np.sum})
 
