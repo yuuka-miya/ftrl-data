@@ -67,6 +67,8 @@ df['TOTAL_TAP_IN_VOLUME'] = (df['TOTAL_TAP_IN_VOLUME'] / df['multiplier']).round
 df['TOTAL_TAP_OUT_VOLUME'] = (df['TOTAL_TAP_OUT_VOLUME'] / df['multiplier']).round(0)
 
 #print (df['TOTAL_TAP_IN_VOLUME'].sum(), df['TOTAL_TAP_IN_VOLUME'].sum())
+df = df.drop(columns=['multiplier'])
+df1 = df1.drop(columns=['multiplier'])
 
 df.to_csv(os.path.join(os.getcwd(), "processed_data", month, "transport_node_train_" + month + "_wholemonth_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
 df1.to_csv(os.path.join(os.getcwd(), "processed_data", month, "transport_node_train_" + month + "_wholemonth-nodays_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
@@ -91,6 +93,8 @@ df = df.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).agg({'TOT
 df['TOTAL_TRIPS'] = (df['TOTAL_TRIPS'] / df['multiplier']).round(0)
 
 df = df[df['TOTAL_TRIPS'] !=0]
+df = df.drop(columns=['multiplier'])
+df1 = df1.drop(columns=['multiplier'])
 
 df.to_csv(os.path.join(os.getcwd(), "processed_data", month, "origin_destination_train_" + month + "_wholemonth_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
 df1.to_csv(os.path.join(os.getcwd(), "processed_data", month, "origin_destination_train_" + month + "_wholemonth-nodays_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
