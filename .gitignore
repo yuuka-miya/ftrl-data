@@ -1,3 +1,5 @@
 raw_data
 bus
+analysis/raw_data
+analysis/gis
 !bus/reader_timed.py

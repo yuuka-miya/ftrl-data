@@ -134,10 +134,10 @@ class Graph:
         return path
 
 def pairwise(iterable):
-  "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-  a, b = itertools.tee(iterable)
-  next(b, None)
-  return zip(a, b)
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return list(a), list(b)  
   
 print("Running pathfinder AND route walker!")
         
@@ -162,13 +162,30 @@ for index1, row1 in tqdm(df1['stn_code'].iteritems(), total = df1.size):
       if row2 not in results[row1]:
         results[row1][row2] = []
       results[row1][row2] = list(graph.dijkstra(row1, row2))
-      for pair in pairwise(results[row1][row2]):
-        data1 = df_src.loc[(df_src["ORIGIN_PT_CODE"] == row1) & (df_src["DESTINATION_PT_CODE"] == row2)]
+      a, b = pairwise(dest)
+      a.pop()
+      pairs_len = len(b)
+      df_temp = pd.DataFrame()
+      data1 = pd.DataFrame(df_src.loc[(df_src["ORIGIN_PT_CODE"] == replace_jointcode(code)) & (df_src["DESTINATION_PT_CODE"] == replace_jointcode(destcode)) & (df_src["DAY_TYPE"] == "WEEKENDS/HOLIDAY")])
+      if len(data1.index) > 0:
+        #print(code, destcode)
+        data1 = data1.loc[data1.index.repeat(pairs_len)]  
+        data1["ORIGIN_PT_CODE"] = a
+        data1["DESTINATION_PT_CODE"] = b
+        df_temp = df_temp.append(data1, ignore_index=True)
+      
+      data1 = pd.DataFrame(df_src.loc[(df_src["ORIGIN_PT_CODE"] == replace_jointcode(code)) & (df_src["DESTINATION_PT_CODE"] == replace_jointcode(destcode)) & (df_src["DAY_TYPE"] == "WEEKDAY")])
+      if len(data1.index) > 0:
+        data1 = data1.loc[data1.index.repeat(pairs_len)]
+        data1["ORIGIN_PT_CODE"] = a
+        data1["DESTINATION_PT_CODE"] = b
+        df_temp = df_temp.append(data1, ignore_index=True)
         
-        if (data1[data1["DAY_TYPE"] == "WEEKDAY"].empty !=  True):
-          list1.append({"daytype": "WEEKDAY", "origin": pair[0], "dest": pair[1], "count": data1[data1["DAY_TYPE"] == "WEEKDAY"]["TOTAL_TRIPS"].values[0]})
-        if (data1[data1["DAY_TYPE"] == "WEEKENDS/HOLIDAY"].empty != True):
-          list1.append({"daytype": "WEEKENDS/HOLIDAY", "origin": pair[0], "dest": pair[1], "count": data1[data1["DAY_TYPE"] == "WEEKENDS/HOLIDAY"]["TOTAL_TRIPS"].values[0]})
+    #print(df_temp)
+    
+    if len(df_temp.index) > 0:
+      df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).sum()
+      df2 = df.append(df_temp)    list1.append({"daytype": "WEEKENDS/HOLIDAY", "origin": pair[0], "dest": pair[1], "count": data1[data1["DAY_TYPE"] == "WEEKENDS/HOLIDAY"]["TOTAL_TRIPS"].values[0]})
 
   df2 = df2.append(list1)
 df2 = df2.groupby(['daytype', 'origin', 'dest']).sum()

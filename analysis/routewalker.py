@@ -24,10 +24,10 @@ def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = itertools.tee(iterable)
     next(b, None)
-    return zip(a, b)   
+    return list(a), list(b)  
 
 data = {}
-df = pd.DataFrame(columns=["daytype", "origin", "dest", "count"])
+df = pd.DataFrame()
 df_src = pd.read_csv("od201911.csv")
 
 with open('train_routes.json') as json_file:
@@ -35,19 +35,29 @@ with open('train_routes.json') as json_file:
     
 iter = tqdm(data.items())
 for code, orig in iter:
-  list1 = []
+code = "BP10"
+
   for destcode, dest in data[code].items():
-    for pair in pairwise(dest):
-      data1 = df_src.loc[(df_src["ORIGIN_PT_CODE"] == replace_jointcode(code)) & (df_src["DESTINATION_PT_CODE"] == replace_jointcode(destcode))]
-      desc = "from " + code + " to " + destcode
-      iter.set_description(desc)
-
-      if (data1[data1["DAY_TYPE"] == "WEEKDAY"].empty !=  True):
-        list1.append({"daytype": "WEEKDAY", "origin": pair[0], "dest": pair[1], "count": data1[data1["DAY_TYPE"] == "WEEKDAY"]["TOTAL_TRIPS"].values[0]})
-      if (data1[data1["DAY_TYPE"] == "WEEKENDS/HOLIDAY"].empty != True):
-        list1.append({"daytype": "WEEKENDS/HOLIDAY", "origin": pair[0], "dest": pair[1], "count": data1[data1["DAY_TYPE"] == "WEEKENDS/HOLIDAY"]["TOTAL_TRIPS"].values[0]})
-
-  df = df.append(list1)
-df = df.groupby(['daytype', 'origin', 'dest']).sum()
+    a, b = pairwise(dest)
+    a.pop()
+    pairs_len = len(b)
+    df_temp = pd.DataFrame()
+    data1 = pd.DataFrame(df_src.loc[(df_src["ORIGIN_PT_CODE"] == replace_jointcode(code)) & (df_src["DESTINATION_PT_CODE"] == replace_jointcode(destcode))])
+    for data_row in data1.itertuples(index=False):
+      #iter.set_description(code, destcode)
+      df_data = pd.DataFrame([data_row])
+      df_data = df_data.loc[df_data.index.repeat(pairs_len)]
+      df_data["ORIGIN_PT_CODE"] = a
+      df_data["DESTINATION_PT_CODE"] = b
+      df_temp = df_temp.append(df_data, ignore_index=True)
+    
+    #print(df_temp)
+    
+    if len(df_temp.index) > 0:
+      df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).sum()
+      df = df.append(df_temp)
   
+  df = df.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).sum()
+    
+df["TOTAL_TRIPS"] = df["TOTAL_TRIPS"].round(1)
 df.to_csv("walked_routes_1.csv")
