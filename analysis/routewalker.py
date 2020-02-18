@@ -35,7 +35,7 @@ with open('train_routes.json') as json_file:
     
 iter = tqdm(data.items())
 for code, orig in iter:
-code = "BP10"
+#code = "BP10"
 
   for destcode, dest in data[code].items():
     a, b = pairwise(dest)

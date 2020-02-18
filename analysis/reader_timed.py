@@ -89,7 +89,7 @@ df1 = df.drop(columns=['multiplier'])
 
 #congestion analysis
 df_fin = pd.DataFrame()
-with open('train_routes.json') as json_file:
+with open('train_routes_nx.json') as json_file:
     data = json.load(json_file)
     
 iter = tqdm(data.items())
@@ -119,5 +119,5 @@ df_fin1 = pd.pivot_table(df_fin, index=['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATI
 
 df_fin = df_fin.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).sum()
 
-df_fin.to_csv(os.path.join(os.getcwd(), "processed_data", month, "cda_train_" + month + "_summary_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
-df_fin1.to_csv(os.path.join(os.getcwd(), "processed_data", month, "cda_train_" + month + "_byhour_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
+df_fin.to_csv(os.path.join(os.getcwd(), "processed_data", month, "cda_nx_train_" + month + "_summary_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
+df_fin1.to_csv(os.path.join(os.getcwd(), "processed_data", month, "cda_nx_train_" + month + "_byhour_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))

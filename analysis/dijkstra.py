@@ -4,6 +4,7 @@ import json
 from tqdm import tqdm
 import itertools
 import numpy as np
+import networkx as nx
 
 interchange_codes = {
     "EW24": "NS1",
@@ -39,7 +40,11 @@ interchange_codes = {
     "FL1": "CC32",
     "JS1": "NS4",
     "JS8": "EW27",
-    "JE5": "EW24-NS1"
+    "JE5": "NS1",
+    "CR5": "EW1",
+    "CR8": "NE14",
+    "CR11": "NS16",
+    "CR13": "TE7"
     
     }
 
@@ -49,90 +54,6 @@ Edge = namedtuple('Edge', 'start, end, cost')
 
 results = {}
 
-def make_edge(start, end, cost=1):
-  return Edge(start, end, cost)
-
-
-class Graph:
-    def __init__(self, edges):
-        # let's check that the data is right
-        wrong_edges = [i for i in edges if len(i) not in [2, 3]]
-        if wrong_edges:
-            raise ValueError('Wrong edges data: {}'.format(wrong_edges))
-
-        self.edges = [make_edge(*edge) for edge in edges]
-    def __init__(self):
-        self.edges = []
-
-    @property
-    def vertices(self):
-        return set(
-            sum(
-                ([edge.start, edge.end] for edge in self.edges), []
-            )
-        )
-
-    def get_node_pairs(self, n1, n2, both_ends=True):
-        if both_ends:
-            node_pairs = [[n1, n2], [n2, n1]]
-        else:
-            node_pairs = [[n1, n2]]
-        return node_pairs
-
-    def remove_edge(self, n1, n2, both_ends=True):
-        node_pairs = self.get_node_pairs(n1, n2, both_ends)
-        edges = self.edges[:]
-        for edge in edges:
-            if [edge.start, edge.end] in node_pairs:
-                self.edges.remove(edge)
-
-    def add_edge(self, n1, n2, cost=1, both_ends=True):
-        node_pairs = self.get_node_pairs(n1, n2, both_ends)
-        for edge in self.edges:
-            if [edge.start, edge.end] in node_pairs:
-                return ValueError('Edge {} {} already exists'.format(n1, n2))
-
-        self.edges.append(Edge(start=n1, end=n2, cost=cost))
-        if both_ends:
-            self.edges.append(Edge(start=n2, end=n1, cost=cost))
-
-    @property
-    def neighbours(self):
-        neighbours = {vertex: set() for vertex in self.vertices}
-        for edge in self.edges:
-            neighbours[edge.start].add((edge.end, edge.cost))
-
-        return neighbours
-
-    def dijkstra(self, source, dest):
-        assert source in self.vertices, 'Such source node doesn\'t exist'
-        distances = {vertex: inf for vertex in self.vertices}
-        previous_vertices = {
-            vertex: None for vertex in self.vertices
-        }
-        distances[source] = 0
-        vertices = self.vertices.copy()
-
-        while vertices:
-            current_vertex = min(
-                vertices, key=lambda vertex: distances[vertex])
-            vertices.remove(current_vertex)
-            if distances[current_vertex] == inf:
-                break
-            for neighbour, cost in self.neighbours[current_vertex]:
-                alternative_route = distances[current_vertex] + cost
-                if alternative_route < distances[neighbour]:
-                    distances[neighbour] = alternative_route
-                    previous_vertices[neighbour] = current_vertex
-
-        path, current_vertex = deque(), dest
-        while previous_vertices[current_vertex] is not None:
-            path.appendleft(current_vertex)
-            current_vertex = previous_vertices[current_vertex]
-        if path:
-            path.appendleft(current_vertex)
-        return path
-
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = itertools.tee(iterable)
@@ -141,16 +62,15 @@ def pairwise(iterable):
   
 print("Running pathfinder AND route walker!")
         
-graph = Graph()
-df = pd.read_csv("nodes.csv")
+graph = nx.Graph()
+df = pd.read_csv("nodes_2040.csv")
 df = df.replace({'n1': interchange_codes, 'n2': interchange_codes})
-df1 = pd.read_csv("stations.csv")
+df1 = pd.read_csv("stations_2040.csv")
 df1 = df1.replace({'stn_code': interchange_codes})
 df1 = df1.drop_duplicates()
 df2 = pd.DataFrame()
-df_src = pd.read_csv("od201911.csv")
 for index, row in df.iterrows():
-    graph.add_edge(row['n1'], row['n2'], row['time'])
+    graph.add_edge(row['n1'], row['n2'], weight=row['time'])
     
 for index1, row1 in tqdm(df1['stn_code'].iteritems(), total = df1.size):
 #row1 = "BP10"
@@ -161,35 +81,23 @@ for index1, row1 in tqdm(df1['stn_code'].iteritems(), total = df1.size):
         results[row1] = {};
       if row2 not in results[row1]:
         results[row1][row2] = []
-      results[row1][row2] = list(graph.dijkstra(row1, row2))
-      a, b = pairwise(dest)
-      a.pop()
-      pairs_len = len(b)
-      df_temp = pd.DataFrame()
-      data1 = pd.DataFrame(df_src.loc[(df_src["ORIGIN_PT_CODE"] == replace_jointcode(code)) & (df_src["DESTINATION_PT_CODE"] == replace_jointcode(destcode)) & (df_src["DAY_TYPE"] == "WEEKENDS/HOLIDAY")])
-      if len(data1.index) > 0:
-        #print(code, destcode)
-        data1 = data1.loc[data1.index.repeat(pairs_len)]  
-        data1["ORIGIN_PT_CODE"] = a
-        data1["DESTINATION_PT_CODE"] = b
-        df_temp = df_temp.append(data1, ignore_index=True)
-      
-      data1 = pd.DataFrame(df_src.loc[(df_src["ORIGIN_PT_CODE"] == replace_jointcode(code)) & (df_src["DESTINATION_PT_CODE"] == replace_jointcode(destcode)) & (df_src["DAY_TYPE"] == "WEEKDAY")])
-      if len(data1.index) > 0:
-        data1 = data1.loc[data1.index.repeat(pairs_len)]
-        data1["ORIGIN_PT_CODE"] = a
-        data1["DESTINATION_PT_CODE"] = b
-        df_temp = df_temp.append(data1, ignore_index=True)
-        
-    #print(df_temp)
-    
-    if len(df_temp.index) > 0:
-      df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).sum()
-      df2 = df.append(df_temp)    list1.append({"daytype": "WEEKENDS/HOLIDAY", "origin": pair[0], "dest": pair[1], "count": data1[data1["DAY_TYPE"] == "WEEKENDS/HOLIDAY"]["TOTAL_TRIPS"].values[0]})
-
-  df2 = df2.append(list1)
-df2 = df2.groupby(['daytype', 'origin', 'dest']).sum()
-df2.to_csv("walked_routes.csv")
+      results[row1][row2] = list(nx.dijkstra_path(graph, row1, row2))
   
-with open ("train_routes.json", "w") as outfile:
+with open ("train_routes_nx_2040.json", "w") as outfile:
     json.dump(results, outfile, sort_keys=True, indent=4, ensure_ascii=False)
+    
+import matplotlib.pyplot as plt
+pos = nx.kamada_kawai_layout(graph, scale=10)  # positions for all nodes
+
+# nodes
+nx.draw_networkx_nodes(graph, pos, node_size=5)
+
+# edges
+nx.draw_networkx_edges(graph, pos)
+
+# labels
+nx.draw_networkx_labels(graph, pos, font_size=5, font_family="sans-serif")
+
+plt.axis("off")
+plt.figure(1, figsize=(500,1000))
+plt.savefig("graph_2040.png", dpi=500)
