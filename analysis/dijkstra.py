@@ -44,7 +44,8 @@ interchange_codes = {
     "CR5": "EW1",
     "CR8": "NE14",
     "CR11": "NS16",
-    "CR13": "TE7"
+    "CR13": "TE7",
+	"CP4": "NE17"
     
     }
 

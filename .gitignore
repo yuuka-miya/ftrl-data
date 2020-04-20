@@ -1,5 +1,7 @@
 raw_data
-bus
+bus/raw_data
+bus/processed_data
+bus/db
 analysis/raw_data
 analysis/gis
 !bus/reader_timed.py
