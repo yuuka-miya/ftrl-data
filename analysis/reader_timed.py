@@ -75,7 +75,7 @@ total = specials + weekdays
 
 #now for orig dest
 
-in_file = os.path.join(os.getcwd(), "raw_data", "origin_destination_train_" + month + ".csv")
+in_file = os.path.join(os.getcwd(), "..", "raw_data", month, "origin_destination_train_" + month + ".csv")
 
 df = pd.read_csv(in_file)
 
