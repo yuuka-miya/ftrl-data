@@ -4,6 +4,8 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<!-- Latest compiled and minified plotly.js JavaScript -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js" charset="utf-8"></script>
 
 
 <nav class="navbar navbar-light bg-light">
@@ -23,6 +25,7 @@ Station: <input class="form-control mr-sm-2" type="text" id="stncode">
  Time period: <select class="custom-select mr-sm-2" id="period">
 </select>
 <button type="button" class="btn btn-primary mr-sm-2" onclick="validateForm()">Go</button>
+<button type="button" class="btn btn-primary mr-sm-2" onclick="historicalTotalEntries()" >View historical data</button>
 
 </form>
 
@@ -31,10 +34,30 @@ Station: <input class="form-control mr-sm-2" type="text" id="stncode">
 </div>
 
 <div class="navbar-text">
-      v20200521.1 by <a href="https://github.com/yuuka-miya/ftrl-data/">@yuuka-miya on Github</a>
+      v20200522.1 by <a href="https://github.com/yuuka-miya/ftrl-data/">@yuuka-miya on Github</a>
     </div>
 
 </nav>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Graph</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="graphHolder"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <p id="rawdebug"></p>
 
@@ -64,7 +87,44 @@ httpGetAsync("https://yuuka-miya.github.io/ftrl-data/data_list.json", function(r
   });
 
 var URL = "https://yuuka-ftrl-v2.azurewebsites.net/api/HttpTrigger?code=3FFgh/68COhe5TCDuMV1E1k/VfqHuaU2uPFQ2yWltLvOaqj/pdYpEg==&ptcode="
-//var URL = "https://localhost:7071/api/HttpTrigger?ptcode="
+var URL_graph = "https://yuuka-ftrl-v2.azurewebsites.net/api/SummaryGraph?code=3FFgh/68COhe5TCDuMV1E1k/VfqHuaU2uPFQ2yWltLvOaqj/pdYpEg==&ptcode="
+//var URL_graph = "http://localhost:7071/api/SummaryGraph?ptcode="
+
+function historicalTotalEntries() {
+  var x = document.getElementById("stncode").value;
+  var daytype = document.getElementById("type").value;
+  var direction = document.getElementById("direction").value;
+  
+  if (x == "") {
+    alert("Station code must be filled out");
+    return false;
+  }
+  
+  if (direction == "0") {
+    alert("Select only one direction: from or to this station");
+    return false;
+  }
+  
+  httpGetAsync(URL_graph + x + "&type=" + daytype + "&direction=" + direction, function(responseText) {
+  
+    response = JSON.parse(responseText);
+	var data = [
+	  {
+		x: Object.keys(response[0]),
+		y: Object.values(response[0]),
+		type: 'bar'
+	  }
+	];
+	var layout = 
+	{
+		xaxis: {type: "category"}
+	}
+
+	Plotly.newPlot('graphHolder', data, layout);
+  });
+   $('#exampleModalCenter').modal('handleUpdate');
+  $('#exampleModalCenter').modal('show');
+}
 
 function validateForm() {
   var x = document.getElementById("stncode").value;
