@@ -6,54 +6,20 @@ import json
 import itertools
 
 from tqdm import tqdm
+#from multiprocessing import Pool
 
 counter = 0
 
 joint_codes = {
-"EW24-NS1": "NS1",
-"CC1-NE6-NS24": "NS24",
-"EW13-NS25" : "NS25",
-"EW14-NS26": "NS26",
-"CC4-DT15": "CC4",
-"NE16-STC": "NE16",
-"NE17-PTC": "NE17"
+"EW24": "NS1",
+"CC1": "NS24",
+"NE6": "NS24",
+"EW13" : "NS25",
+"EW14": "NS26",
+"DT15": "CC4",
+"STC": "NE16",
+"PTC": "NE17"
 }
-
-def replace_jointcode(code):
-  if code in joint_codes.keys():
-    return joint_codes[code]
-  return code
-
-
-def pairwise(iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-    a, b = itertools.tee(iterable)
-    next(b, None)
-    return list(a), list(b)
-    
-def unpack_column(data_row):
-  global df_fin
-  global df_temp
-  global counter
-  
-  orig = replace_jointcode(data_row["ORIGIN_PT_CODE"])
-  dest = replace_jointcode(data_row["DESTINATION_PT_CODE"])
-  a, b = pairwise(data[orig][dest])
-  a.pop()
-  pairs_len = len(b)
-  df_data = pd.DataFrame([data_row])
-  df_data = df_data.loc[df_data.index.repeat(pairs_len)]
-  df_data["ORIGIN_PT_CODE"] = a
-  df_data["DESTINATION_PT_CODE"] = b
-  if len(df_data.index) > 0:
-     df_temp = pd.concat([df_temp, df_data])
-     #make sure df_temp doesn't get too big
-     counter = counter + 1
-     if counter > 1000:
-        df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
-        df_fin = df_fin.append(df_temp)
-        counter = 0
-     
 
 interchange_codes = {
     "BP1": "NS4",
@@ -86,6 +52,53 @@ interchange_codes = {
     "JE5": "EW24-NS1"
     
     }
+
+def replace_jointcode(code):
+  code = code.split('/')[0]
+  if code in joint_codes.keys():
+    return joint_codes[code]
+  if code in interchange_codes.keys():
+    return joint_codes[code]
+  return code
+  
+#http://www.racketracer.com/2016/07/06/pandas-in-parallel/
+
+# def parallelize_dataframe(df, func):
+    # df_split = np.array_split(df, num_partitions)
+    # pool = Pool(num_cores)
+    # df = pd.concat(pool.map(func, df_split))
+    # pool.close()
+    # pool.join()
+    # return df
+
+def pairwise(iterable):
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return list(a), list(b)
+    
+def unpack_column(data_row):
+  global df_fin
+  global df_temp
+  global counter
+  
+  orig = replace_jointcode(data_row["ORIGIN_PT_CODE"])
+  dest = replace_jointcode(data_row["DESTINATION_PT_CODE"])
+  a, b = pairwise(data[orig][dest])
+  a.pop()
+  pairs_len = len(b)
+  df_data = pd.DataFrame([data_row])
+  df_data = df_data.loc[df_data.index.repeat(pairs_len)]
+  df_data["ORIGIN_PT_CODE"] = a
+  df_data["DESTINATION_PT_CODE"] = b
+  if len(df_data.index) > 0:
+     df_temp = pd.concat([df_temp, df_data])
+     #make sure df_temp doesn't get too big
+     counter = counter + 1
+     if counter > 1000:
+        df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
+        df_fin = df_fin.append(df_temp)
+        counter = 0
 
 month = input("Dataset for (YYYYMM): ")
 weekdays = input("Number of weekdays: ")

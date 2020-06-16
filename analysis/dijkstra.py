@@ -45,8 +45,12 @@ interchange_codes = {
     "CR8": "NE14",
     "CR11": "NS16",
     "CR13": "TE7",
-	"CP4": "NE17"
-    
+	"CP4": "NE17",
+    #unpaid links
+    "BP6": "DT1",
+    "DT32": "EW2",
+    "DT11": "NS21",
+    "CP3": "PE4"
     }
 
 # we'll use infinity as a default distance to nodes.
