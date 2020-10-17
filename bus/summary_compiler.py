@@ -31,7 +31,12 @@ for subdir, dirs, files in os.walk("processed_data"):
                 df = df.append(df_plus, ignore_index=True, sort=False)
                 # if ('TOTAL_TAP_IN_VOLUME', month_tag) in df_in.columns:
                     # print(month_tag)
-                
+
+#dft = df['PT_CODE'].str.split('/').str[0]
+#dft = dft.str.split('-').str[0]
+#dft.to_csv("test.csv")
+
+#df['PT_CODE'] = dft            
 df1 = pd.pivot_table(df, index=["DAY_TYPE", 'PT_CODE'], columns=["month"], aggfunc={'TOTAL_TAP_IN_VOLUME': np.sum, 'TOTAL_TAP_OUT_VOLUME': np.sum})
 
 #df1 = pd.concat([df1, df_in])

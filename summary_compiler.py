@@ -31,12 +31,18 @@ for subdir, dirs, files in os.walk("processed_data"):
                 df = df.append(df_plus, ignore_index=True, sort=False)
                 # if ('TOTAL_TAP_IN_VOLUME', month_tag) in df_in.columns:
                     # print(month_tag)
-                
+
+dft = df['PT_CODE'].str.split('/').str[0]
+dft = dft.str.split('-').str[0]
+#dft.to_csv("test.csv")
+
+df['PT_CODE'] = dft
+#print(dft)                
 df1 = pd.pivot_table(df, index=["DAY_TYPE", 'PT_CODE'], columns=["month"], aggfunc={'TOTAL_TAP_IN_VOLUME': np.sum, 'TOTAL_TAP_OUT_VOLUME': np.sum})
 
 #df1 = pd.concat([df1, df_in])
 df1 = df1.groupby(["DAY_TYPE", 'PT_CODE']).sum()
-df1.to_csv("processed_data/summary2.csv")
+df1.to_csv("processed_data/summary.csv")
 
 # if os.path.exists("processed_data/odsummary.csv"):
     # df_in = pd.read_csv("processed_data/odsummary.csv", header=[0,1])
@@ -72,4 +78,4 @@ df1 = pd.pivot_table(df, index=["DAY_TYPE", 'ORIGIN_PT_CODE', 'DESTINATION_PT_CO
 
 #df1 = pd.concat([df1, df_in])
 df1 = df1.groupby(["DAY_TYPE", 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).sum()
-df1.to_csv("processed_data/odsummary2.csv")
+df1.to_csv("processed_data/odsummary.csv")
