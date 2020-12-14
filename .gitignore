@@ -5,3 +5,4 @@ bus/db
 analysis/raw_data
 analysis/gis
 !bus/reader_timed.py
+!bus/graph_in*

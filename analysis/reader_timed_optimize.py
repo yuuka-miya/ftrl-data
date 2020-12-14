@@ -49,7 +49,18 @@ interchange_codes = {
     "FL1": "CC32",
     "JS1": "NS4",
     "JS8": "EW27",
-    "JE5": "EW24-NS1"
+    "JE5": "EW24-NS1",
+    "CR5": "EW1",
+    "CR8": "NE14",
+    "CR11": "NS16",
+    "CR13": "TE7",
+	"CP4": "NE17",
+    #unpaid links
+    "BP6": "DT1",
+    "PB6": "DT1", # silly HSO intern
+    "DT32": "EW2",
+    "DT11": "NS21",
+    "CP3": "PE4"
     
     }
 
@@ -58,7 +69,7 @@ def replace_jointcode(code):
   if code in joint_codes.keys():
     return joint_codes[code]
   if code in interchange_codes.keys():
-    return joint_codes[code]
+    return interchange_codes[code]
   return code
   
 #http://www.racketracer.com/2016/07/06/pandas-in-parallel/
