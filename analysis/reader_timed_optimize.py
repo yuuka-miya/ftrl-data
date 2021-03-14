@@ -158,5 +158,5 @@ df_fin1 = pd.pivot_table(df_fin, index=['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATI
 
 df_fin = df_fin.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).sum()
 
-df_fin.to_csv(os.path.join(os.getcwd(), "processed_data", month, "cda_nx_opt_train_" + month + "_summary_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
-df_fin1.to_csv(os.path.join(os.getcwd(), "processed_data", month, "cda_nx_opt_train_" + month + "_byhour_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
+df_fin.to_csv(os.path.join(os.getcwd(), "..", "processed_data", month, "cda_nx_opt_train_" + month + "_summary_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
+df_fin1.to_csv(os.path.join(os.getcwd(), "..", "processed_data", month, "cda_nx_opt_train_" + month + "_byhour_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
