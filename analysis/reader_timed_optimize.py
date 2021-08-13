@@ -4,6 +4,7 @@ import os
 import datetime
 import json
 import itertools
+import cudf
 
 from tqdm import tqdm
 #from multiprocessing import Pool
@@ -49,7 +50,7 @@ interchange_codes = {
     "FL1": "CC32",
     "JS1": "NS4",
     "JS8": "EW27",
-    "JE5": "EW24-NS1",
+    "JE5": "NS1",
     "CR5": "EW1",
     "CR8": "NE14",
     "CR11": "NS16",
@@ -106,9 +107,11 @@ def unpack_column(data_row):
      df_temp = pd.concat([df_temp, df_data])
      #make sure df_temp doesn't get too big
      counter = counter + 1
-     if counter > 1000:
-        df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
-        df_fin = df_fin.append(df_temp)
+     if counter > 300:
+        #df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
+        df_fin = df_fin.append(cudf.DataFrame.from_pandas(df_temp))
+        #df_fin = df_fin.append(df_temp)
+        df_temp = pd.DataFrame()
         counter = 0
 
 month = input("Dataset for (YYYYMM): ")
@@ -117,9 +120,6 @@ weekdays = int(weekdays)
 
 specials = input("Number of weekends and holidays: ")
 specials = int(specials)
-
-if not os.path.exists(os.path.join(os.getcwd(), "processed_data", month)):
-    os.mkdir(os.path.join(os.getcwd(), "processed_data", month))
 
 total = specials + weekdays
 
@@ -144,15 +144,22 @@ with open('train_routes_nx.json') as json_file:
     
 tqdm.pandas()
 
-df_fin = pd.DataFrame()
+df_fin = cudf.DataFrame()
 df_temp = pd.DataFrame()
 df1.progress_apply(unpack_column, axis=1)
 
 #pack up the stragglers
-df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
-df_fin = df_fin.append(df_temp)
+#df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
+df_fin = df_fin.append(cudf.DataFrame.from_pandas(df_temp))
+#df_fin = df_fin.append(df_temp)
 
 df_fin = df_fin.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
+
+df_fin = df_fin.to_pandas()
+
+df_graphs = df_fin
+
+#copy out, for graph generation
 
 df_fin1 = pd.pivot_table(df_fin, index=['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE'], columns=["TIME_PER_HOUR"], aggfunc={'TOTAL_TRIPS': np.sum})
 
