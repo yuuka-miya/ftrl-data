@@ -1,9 +1,10 @@
 raw_data
-processed_data/*/
+processed_data/
 bus/raw_data
 bus/processed_data
 bus/db
 analysis/raw_data
 analysis/gis
+analysis/graphs
 !bus/reader_timed.py
 !bus/graph_in*
