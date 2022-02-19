@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-year = "2021"
+year = "2022"
 
 df = pd.DataFrame()
 
@@ -25,7 +25,7 @@ for subdir, dirs, files in os.walk("processed_data"):
         #print os.path.join(subdir, file)
         filepath = os.path.join(subdir,file)
 
-        if "_wholemonth_" in filepath:
+        if "_summary_" in filepath:
             if "node" in filepath:
                 df_plus = pd.read_csv(filepath)
                 month_tag = os.path.split(subdir)[1]

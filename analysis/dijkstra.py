@@ -68,9 +68,9 @@ def pairwise(iterable):
 print("Running pathfinder AND route walker!")
         
 graph = nx.Graph()
-df = pd.read_csv("nodes_tel2.csv")
+df = pd.read_csv("nodes_tel3.csv")
 df = df.replace({'n1': interchange_codes, 'n2': interchange_codes})
-df1 = pd.read_csv("stations_tel2.csv")
+df1 = pd.read_csv("stations_tel3.csv")
 df1 = df1.replace({'stn_code': interchange_codes})
 df1 = df1.drop_duplicates()
 df2 = pd.DataFrame()
@@ -88,7 +88,7 @@ for index1, row1 in tqdm(df1['stn_code'].iteritems(), total = df1.size):
         results[row1][row2] = []
       results[row1][row2] = list(nx.dijkstra_path(graph, row1, row2))
   
-with open ("train_routes_nx_tel2.json", "w") as outfile:
+with open ("train_routes_nx_tel3.json", "w") as outfile:
     json.dump(results, outfile, sort_keys=True, indent=4, ensure_ascii=False)
     
 import matplotlib.pyplot as plt
@@ -105,4 +105,4 @@ nx.draw_networkx_labels(graph, pos, font_size=5, font_family="sans-serif")
 
 plt.axis("off")
 plt.figure(1, figsize=(500,1000))
-plt.savefig("graph_tel2.png", dpi=500)
+plt.savefig("graph_tel3.png", dpi=500)
