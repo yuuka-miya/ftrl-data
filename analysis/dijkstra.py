@@ -46,6 +46,11 @@ interchange_codes = {
     "CR11": "NS16",
     "CR13": "TE7",
 	"CP4": "NE17",
+    #as leaked in online exhibit
+    "CR15": "DT6",
+    "CR17": "EW23",
+    "CR21": "JS12",
+    "CR24": "EW30",
     #unpaid links
     "BP6": "DT1",
     "DT32": "EW2",
