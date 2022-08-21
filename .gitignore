@@ -3,6 +3,9 @@ processed_data/
 bus/raw_data
 bus/processed_data
 bus/db
+bus/profiler/od.csv
+bus/profiler/output
+bus/profiler/.ipynb_checkpoints
 analysis/raw_data
 analysis/gis
 analysis/graphs

@@ -109,7 +109,8 @@ def unpack_column(data_row):
      counter = counter + 1
      if counter > 300:
         #df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
-        df_fin = df_fin.append(cudf.DataFrame.from_pandas(df_temp))
+        #df_fin = df_fin.append(cudf.DataFrame.from_pandas(df_temp))
+        df_fin = cudf.concat([df_fin, cudf.DataFrame.from_pandas(df_temp)])
         #df_fin = df_fin.append(df_temp)
         df_temp = pd.DataFrame()
         counter = 0
@@ -150,7 +151,7 @@ df1.progress_apply(unpack_column, axis=1)
 
 #pack up the stragglers
 #df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
-df_fin = df_fin.append(cudf.DataFrame.from_pandas(df_temp))
+df_fin = df_fin = cudf.concat([df_fin, cudf.DataFrame.from_pandas(df_temp)])
 #df_fin = df_fin.append(df_temp)
 
 df_fin = df_fin.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
