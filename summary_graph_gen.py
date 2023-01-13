@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-year = "2022"
+year = input("Year: ")
 
 df = pd.DataFrame()
 
@@ -26,22 +26,21 @@ for subdir, dirs, files in os.walk("processed_data"):
         filepath = os.path.join(subdir,file)
 
         if "_summary_" in filepath:
-            if "node" in filepath:
+            if "origin" in filepath:
                 df_plus = pd.read_csv(filepath)
                 month_tag = os.path.split(subdir)[1]
                 if year in month_tag:
                     df_plus.insert(0, "month", month_tag)
-                    df = df.append(df_plus, ignore_index=True, sort=False)
+                    df = pd.concat([df, df_plus])
                 # if ('TOTAL_TAP_IN_VOLUME', month_tag) in df_in.columns:
                     # print(month_tag)
-                
-df1 = pd.pivot_table(df, index=["DAY_TYPE", 'PT_CODE'], columns=["month"], aggfunc={'TOTAL_TAP_IN_VOLUME': np.sum, 'TOTAL_TAP_OUT_VOLUME': np.sum})
+df1 = pd.pivot_table(df, index=["DAY_TYPE", 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE'], columns=["month"], aggfunc={'TOTAL_TRIPS': np.sum})
 
 #df1 = pd.concat([df1, df_in])
-df1 = df1.groupby(["DAY_TYPE", 'PT_CODE']).sum()
+df1 = df1.groupby(["DAY_TYPE", 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).sum()
 #df1.to_csv("processed_data/summary2.csv")
-df2 = df1.groupby(["DAY_TYPE"]).sum()['TOTAL_TAP_IN_VOLUME'].plot(kind="bar")
+df2 = df1.groupby(["DAY_TYPE"]).sum()['TOTAL_TRIPS'].plot(kind="bar")
 df2.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
            ncol=6, mode="expand", fontsize='xx-small')
 df2.tick_params(labelrotation=0)
-df2.get_figure().savefig("graph_in.png", format='png')
+df2.get_figure().savefig(f"graph_in_{year}.png", format='png')

@@ -96,6 +96,7 @@ def unpack_column(data_row):
   
   orig = replace_jointcode(data_row["ORIGIN_PT_CODE"])
   dest = replace_jointcode(data_row["DESTINATION_PT_CODE"])
+  print(orig, dest)
   a, b = pairwise(data[orig][dest])
   a.pop()
   pairs_len = len(b)

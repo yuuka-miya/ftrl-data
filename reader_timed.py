@@ -18,6 +18,7 @@ interchange_codes = {
     "CC13": "NE12",
     "STC": "NE16",
     "PTC": "NE17",
+    "DT15": "CC4",
     "DT26": "CC10",
     "DT9": "CC19",
     "DT16": "CE1",
@@ -51,7 +52,12 @@ in_file = os.path.join(os.getcwd(), "raw_data", month, "transport_node_train_" +
 
 df = pd.read_csv(in_file)
 df['multiplier'] = df['DAY_TYPE']
+
+# not needed wef 202212
 df = df.replace({'PT_CODE': interchange_codes, 'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
+#df = df.replace({'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
+
+df = df[~df['PT_CODE'].isin(interchange_codes.values())]
 
 df2 = df.groupby(['PT_CODE']).sum()
 df2['TOTAL_TAP_IN_VOLUME'] = (df2['TOTAL_TAP_IN_VOLUME'] / total).round(1)
@@ -86,7 +92,12 @@ df = pd.read_csv(in_file)
 
 df['multiplier'] = df['DAY_TYPE']
 
+# not needed wef 202212
 df = df.replace({'ORIGIN_PT_CODE': interchange_codes, 'DESTINATION_PT_CODE': interchange_codes, 'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
+#df = df.replace({'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
+
+df = df[~df['ORIGIN_PT_CODE'].isin(interchange_codes.values())]
+df = df[~df['DESTINATION_PT_CODE'].isin(interchange_codes.values())]
 
 df2 = df.groupby(['ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).sum()
 df2['TOTAL_TRIPS'] = (df2['TOTAL_TRIPS'] / total).round(1)

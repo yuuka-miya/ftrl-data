@@ -45,10 +45,10 @@ interchange_codes = {
     "CR8": "NE14",
     "CR11": "NS16",
     "CR13": "TE7",
-	"CP4": "NE17",
-    #as leaked in online exhibit
+	  "CP4": "NE17",
     "CR15": "DT6",
     "CR17": "EW23",
+    #as leaked in online exhibit
     "CR21": "JS12",
     "CR24": "EW30",
     #unpaid links
@@ -73,9 +73,9 @@ def pairwise(iterable):
 print("Running pathfinder AND route walker!")
         
 graph = nx.Graph()
-df = pd.read_csv("nodes_tel3.csv")
+df = pd.read_csv("nodes.csv")
 df = df.replace({'n1': interchange_codes, 'n2': interchange_codes})
-df1 = pd.read_csv("stations_tel3.csv")
+df1 = pd.read_csv("stations.csv")
 df1 = df1.replace({'stn_code': interchange_codes})
 df1 = df1.drop_duplicates()
 df2 = pd.DataFrame()
