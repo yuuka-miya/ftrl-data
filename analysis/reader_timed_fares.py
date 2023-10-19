@@ -45,7 +45,7 @@ interchange_codes = {
     "TE11": "DT10",
     "TE14": "NS22",
     "TE17": "EW16",
-    "TE20": "NS27"
+    "TE20": "NS27",
   #   "TE31": "DT37",
   #   "FL1": "CC32",
   #   "JS1": "NS4",
@@ -57,22 +57,15 @@ interchange_codes = {
   #   "CR13": "TE7",
 	# "CP4": "NE17",
     #unpaid links
-    #"BP6": "DT1",
-    #"PB6": "DT1", # silly HSO intern
-    #"DT32": "EW2",
-    #"DT11": "NS21"
+    "BP6": "DT1",
+    "PB6": "DT1", # silly HSO intern
+    "DT32": "EW2",
+    "DT11": "NS21"
     #"CP3": "PE4"
     
     }
 
-
-
-unpaid_links = ["BP6/DT1", "EW2/DT32", "NS21/DT11"]
-
 def replace_jointcode(code):
-
-  if code in unpaid_links:
-     return code
   code = code.split('/')[0]
   if code in joint_codes.keys():
     return joint_codes[code]
@@ -148,7 +141,7 @@ df = df[df['ORIGIN_PT_CODE'] != df['DESTINATION_PT_CODE']]
 df1 = df.drop(columns=['multiplier'])
 
 #congestion analysis
-with open('train_routes_nx_tel3.json') as json_file:
+with open('train_routes_nx_tel3_dist.json') as json_file:
     data = json.load(json_file)
     
 tqdm.pandas()
@@ -159,7 +152,7 @@ df1.progress_apply(unpack_column, axis=1)
 
 #pack up the stragglers
 #df_temp = df_temp.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
-df_fin = df_fin = cudf.concat([df_fin, cudf.DataFrame.from_pandas(df_temp)])
+df_fin = cudf.concat([df_fin, cudf.DataFrame.from_pandas(df_temp)])
 #df_fin = df_fin.append(df_temp)
 
 df_fin = df_fin.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'TIME_PER_HOUR']).sum()
@@ -174,5 +167,5 @@ df_fin1 = pd.pivot_table(df_fin, index=['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATI
 
 df_fin = df_fin.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).sum()
 
-df_fin.to_csv(os.path.join(os.getcwd(), "..", "processed_data", month, "cda_nx_opt_train_" + month + "_summary_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
-df_fin1.to_csv(os.path.join(os.getcwd(), "..", "processed_data", month, "cda_nx_opt_train_" + month + "_byhour_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
+df_fin.to_csv(os.path.join(os.getcwd(), "..", "processed_data", month, "cda_nx_dist_train_" + month + "_summary_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
+df_fin1.to_csv(os.path.join(os.getcwd(), "..", "processed_data", month, "cda_nx_dist_train_" + month + "_byhour_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))

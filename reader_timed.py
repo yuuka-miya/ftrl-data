@@ -27,12 +27,12 @@ interchange_codes = {
     "TE11": "DT10",
     "TE14": "NS22",
     "TE17": "EW16",
-    "TE20": "NS27",
-    "TE31": "DT37",
-    "FL1": "CC32",
-    "JS1": "NS4",
-    "JS8": "EW27",
-    "JE5": "EW24-NS1"
+    "TE20": "NS27"
+   # "TE31": "DT37",
+   # "FL1": "CC32",
+   # "JS1": "NS4",
+   # "JS8": "EW27",
+   # "JE5": "EW24-NS1"
     
     }
 
