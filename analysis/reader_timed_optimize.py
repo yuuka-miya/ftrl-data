@@ -13,13 +13,9 @@ counter = 0
 
 joint_codes = {
 "EW24": "NS1",
-"CC1": "NS24",
-"NE6": "NS24",
 "EW13" : "NS25",
 "EW14": "NS26",
-"DT15": "CC4",
-"STC": "NE16",
-"PTC": "NE17"
+"DT16": "CE1"
 }
 
 interchange_codes = {
@@ -71,13 +67,13 @@ unpaid_links = ["BP6/DT1", "EW2/DT32", "NS21/DT11"]
 
 def replace_jointcode(code):
 
-  if code in unpaid_links:
-     return code
-  code = code.split('/')[0]
-  if code in joint_codes.keys():
-    return joint_codes[code]
-  if code in interchange_codes.keys():
-    return interchange_codes[code]
+  # if code in unpaid_links:
+  #    return code
+  # newcode = code.split('/')[0]
+  # if newcode in joint_codes.keys():
+  #   return joint_codes[newcode]
+  if code == "PB6/DT1":
+    return "BP6/DT1"
   return code
   
 #http://www.racketracer.com/2016/07/06/pandas-in-parallel/

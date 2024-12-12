@@ -10,3 +10,5 @@ analysis/graphs
 !bus/reader_timed.py
 !bus/graph_in*
 .ipynb_checkpoints
+downloader/
+!downloader/downloader.py

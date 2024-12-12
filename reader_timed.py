@@ -24,7 +24,9 @@ interchange_codes = {
     "DT16": "CE1",
     "TE2": "NS9",
     "TE9": "CC17",
-    "TE11": "DT10",
+    #hijack to fix LTA forgetting to merge DT10/TE11
+    "DT10": "DT10/TE11",
+    "TE11": "DT10/TE11",
     "TE14": "NS22",
     "TE17": "EW16",
     "TE20": "NS27"
@@ -56,8 +58,10 @@ df['multiplier'] = df['DAY_TYPE']
 # not needed wef 202212
 df = df.replace({'PT_CODE': interchange_codes, 'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
 #df = df.replace({'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
+df = df.groupby(['PT_CODE', 'DAY_TYPE', 'multiplier']).sum()
 
-df = df[~df['PT_CODE'].isin(interchange_codes.values())]
+df = df.reset_index()
+df = df[~df['PT_CODE'].isin(interchange_codes.keys())]
 
 df2 = df.groupby(['PT_CODE']).sum()
 df2['TOTAL_TAP_IN_VOLUME'] = (df2['TOTAL_TAP_IN_VOLUME'] / total).round(1)

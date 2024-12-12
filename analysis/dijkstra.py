@@ -6,60 +6,15 @@ import itertools
 import numpy as np
 import networkx as nx
 
+#cross platform interchanges - they share the same node
 interchange_codes = {
     "EW24": "NS1",
     "EW13": "NS25",
     "EW14": "NS26",
-    "DT15": "CC4",
-    "CC1": "NS24",
-    "NE6": "NS24",
-    "BP1": "NS4",
-    "CC15": "NS17",
-    "CE2": "NS27",
-    "CC9": "EW8",
-    "DT14": "EW12",
-    "NE3": "EW16",
-    "CC22": "EW21",
-    "DT35": "CG1",
-    "CC29": "NE1",
-    "DT19": "NE4",
-    "DT12": "NE7",
-    "CC13": "NE12",
-    "STC": "NE16",
-    "PTC": "NE17",
-    "DT26": "CC10",
-    "DT9": "CC19",
-    "DT16": "CE1",
-    "TE2": "NS9",
-    "TE9": "CC17",
-    "TE11": "DT10",
-    "TE14": "NS22",
-    "TE17": "EW16",
-    "TE20": "NS27",
-    "TE31": "DT37",
-    "FL1": "CC32",
-    "JS1": "NS4",
-    "JS8": "EW27",
-    "JE5": "NS1",
-    "CR5": "EW1",
-    "CR8": "NE14",
-    "CR11": "NS16",
-    "CR13": "TE7",
-	  "CP4": "NE17",
-    "CR15": "DT6",
-    "CR17": "EW23",
-    #as leaked in online exhibit
-    "CR21": "JS12",
-    "CR24": "EW30",
-    #unpaid links
-    # hack: represent unpaid links with a distance cost of 99 so only entries/exits use it
-    #"BP6": "DT1",
-    #"DT32": "EW2",
-    #"DT11": "NS21",
-    "CP3": "PE4"
+    "DT16": "CE1"
     }
 
-unpaid_links = ["BP6/DT1", "EW2/DT32", "NS21/DT11"]
+interchange_nodes = []
 
 # we'll use infinity as a default distance to nodes.
 inf = float('inf')
@@ -76,7 +31,7 @@ def pairwise(iterable):
 print("Running pathfinder AND route walker!")
         
 graph = nx.Graph()
-df = pd.read_csv("nodes_unpaidhack.csv")
+df = pd.read_csv("nodes.csv")
 df = df.replace({'n1': interchange_codes, 'n2': interchange_codes})
 df1 = pd.read_csv("stations.csv")
 df1 = df1.replace({'stn_code': interchange_codes})
@@ -84,6 +39,15 @@ df1 = df1.drop_duplicates()
 df2 = pd.DataFrame()
 for index, row in df.iterrows():
     graph.add_edge(row['n1'], row['n2'], weight=row['time'])
+
+# interchange station handling - weight 99 to the joint code so that only entries/exits use it
+for index, row in df1.iterrows():
+  code = row["stn_code"]
+  break_code = code.split('/')
+  if len(break_code) > 1:
+    interchange_nodes.append(code)
+    for subcode in break_code:
+      graph.add_edge(code, subcode, weight=99)
     
 for index1, row1 in tqdm(df1['stn_code'].items(), total = df1.size):
 #row1 = "BP10"
@@ -95,15 +59,14 @@ for index1, row1 in tqdm(df1['stn_code'].items(), total = df1.size):
       if row2 not in results[row1]:
         results[row1][row2] = []
 
-      # code here to select routes b
       results[row1][row2] = list(nx.dijkstra_path(graph, row1, row2))
   
 with open ("train_routes_nx_tel3.json", "w") as outfile:
     json.dump(results, outfile, sort_keys=True, indent=4, ensure_ascii=False)
 
 # remove our hack nodes
-#for u in unpaid_links:
-#   graph.remove_node(u)
+for u in interchange_nodes:
+   graph.remove_node(u)
     
 import matplotlib.pyplot as plt
 pos = nx.kamada_kawai_layout(graph, scale=10)  # positions for all nodes

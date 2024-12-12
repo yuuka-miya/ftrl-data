@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-year = "2023"
+year = input("Year: ")
 
 df = pd.DataFrame()
 
@@ -31,7 +31,7 @@ for subdir, dirs, files in os.walk("processed_data"):
                 month_tag = os.path.split(subdir)[1]
                 if year in month_tag:
                     df_plus.insert(0, "month", month_tag)
-                    df = df.append(df_plus, ignore_index=True, sort=False)
+                    df = pd.concat([df, df_plus])
                 # if ('TOTAL_TAP_IN_VOLUME', month_tag) in df_in.columns:
                     # print(month_tag)
                 
@@ -44,4 +44,4 @@ df2 = df1.groupby(["DAY_TYPE"]).sum()['TOTAL_TAP_IN_VOLUME'].plot(kind="bar")
 df2.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
            ncol=6, mode="expand", fontsize='xx-small')
 df2.tick_params(labelrotation=0)
-df2.get_figure().savefig("graph_in.png", format='png')
+df2.get_figure().savefig(f"graph_in_{year}.png", format='png')
