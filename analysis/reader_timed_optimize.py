@@ -38,7 +38,9 @@ interchange_codes = {
     "DT16": "CE1",
     "TE2": "NS9",
     "TE9": "CC17",
-    "TE11": "DT10",
+    #hijack to fix LTA forgetting to merge DT10/TE11
+    "DT10": "DT10/TE11",
+    "TE11": "DT10/TE11",
     "TE14": "NS22",
     "TE17": "EW16",
     "TE20": "NS27"
@@ -144,7 +146,7 @@ df = df[df['ORIGIN_PT_CODE'] != df['DESTINATION_PT_CODE']]
 df1 = df.drop(columns=['multiplier'])
 
 #congestion analysis
-with open('train_routes_nx_tel3.json') as json_file:
+with open('train_routes_nx.json') as json_file:
     data = json.load(json_file)
     
 tqdm.pandas()
