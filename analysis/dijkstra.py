@@ -61,7 +61,7 @@ for index1, row1 in tqdm(df1['stn_code'].items(), total = df1.size):
 
       results[row1][row2] = list(nx.dijkstra_path(graph, row1, row2))
   
-with open ("train_routes_nx_tel3.json", "w") as outfile:
+with open ("train_routes_nx.json", "w") as outfile:
     json.dump(results, outfile, sort_keys=True, indent=4, ensure_ascii=False)
 
 # remove our hack nodes

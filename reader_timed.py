@@ -58,7 +58,7 @@ df['multiplier'] = df['DAY_TYPE']
 # not needed wef 202212
 df = df.replace({'PT_CODE': interchange_codes, 'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
 #df = df.replace({'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
-df = df.groupby(['PT_CODE', 'DAY_TYPE', 'multiplier']).sum()
+df = df.groupby(['PT_CODE', 'DAY_TYPE', 'multiplier', 'TIME_PER_HOUR']).sum()
 
 df = df.reset_index()
 df = df[~df['PT_CODE'].isin(interchange_codes.keys())]
