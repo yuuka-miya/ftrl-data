@@ -1,3 +1,6 @@
+import cudf.pandas
+cudf.pandas.install()
+
 import pandas as pd
 import numpy as np
 import os
@@ -56,7 +59,7 @@ df = pd.read_csv(in_file)
 df['multiplier'] = df['DAY_TYPE']
 
 # not needed wef 202212
-df = df.replace({'PT_CODE': interchange_codes, 'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
+df = df.replace({'PT_CODE': interchange_codes, 'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}}).infer_objects(copy=False)
 #df = df.replace({'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
 df = df.groupby(['PT_CODE', 'DAY_TYPE', 'multiplier', 'TIME_PER_HOUR']).sum()
 
@@ -75,11 +78,11 @@ df2['TOTAL_USAGE'] = df2['TOTAL_TAP_IN_VOLUME'] + df2['TOTAL_TAP_OUT_VOLUME']
 
 df1 = df.drop(columns=['multiplier'])
 
-df = df.groupby(['DAY_TYPE', 'PT_CODE']).agg({'TOTAL_TAP_IN_VOLUME': np.sum, 'TOTAL_TAP_OUT_VOLUME': np.sum, 'TOTAL_USAGE': np.sum, 'multiplier': "first"})
+df = df.groupby(['DAY_TYPE', 'PT_CODE']).agg({'TOTAL_TAP_IN_VOLUME': "sum", 'TOTAL_TAP_OUT_VOLUME': "sum", 'TOTAL_USAGE': "sum", 'multiplier': "first"})
 df = df.drop(columns=['multiplier'])
 
 #new_index = pd.MultiIndex.from_frame(df[['PT_CODE', 'DAY_TYPE']])
-df1 = pd.pivot_table(df1, index=['PT_CODE', 'DAY_TYPE'], columns=["TIME_PER_HOUR"], aggfunc={'TOTAL_TAP_IN_VOLUME': np.sum, 'TOTAL_TAP_OUT_VOLUME': np.sum, 'TOTAL_USAGE': np.sum}, fill_value=0)
+df1 = pd.pivot_table(df1, index=['PT_CODE', 'DAY_TYPE'], columns=["TIME_PER_HOUR"], aggfunc={'TOTAL_TAP_IN_VOLUME': "sum", 'TOTAL_TAP_OUT_VOLUME': "sum", 'TOTAL_USAGE': "sum"}, fill_value=0)
 
 #print (df['TOTAL_TAP_IN_VOLUME'].sum(), df['TOTAL_TAP_IN_VOLUME'].sum())
 df2 = df2.drop(columns=['TIME_PER_HOUR', 'multiplier'])
@@ -97,7 +100,7 @@ df = pd.read_csv(in_file)
 df['multiplier'] = df['DAY_TYPE']
 
 # not needed wef 202212
-df = df.replace({'ORIGIN_PT_CODE': interchange_codes, 'DESTINATION_PT_CODE': interchange_codes, 'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
+df = df.replace({'ORIGIN_PT_CODE': interchange_codes, 'DESTINATION_PT_CODE': interchange_codes, 'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}}).infer_objects(copy=False)
 #df = df.replace({'multiplier': {'WEEKENDS/HOLIDAY': specials, 'WEEKDAY': weekdays}})
 
 df = df[~df['ORIGIN_PT_CODE'].isin(interchange_codes.values())]
@@ -110,11 +113,11 @@ df['TOTAL_TRIPS'] = (df['TOTAL_TRIPS'] / df['multiplier']).round(1)
 df = df[df['TOTAL_TRIPS'] !=0]
 df1 = df.drop(columns=['multiplier'])
 
-df = df.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).agg({'TOTAL_TRIPS': np.sum, 'multiplier': "first"})
+df = df.groupby(['DAY_TYPE', 'ORIGIN_PT_CODE', 'DESTINATION_PT_CODE']).agg({'TOTAL_TRIPS': "sum", 'multiplier': "first"})
 df = df.drop(columns=['multiplier'])
 df2 = df2.drop(columns=['TIME_PER_HOUR', 'multiplier'])
 
-df1 = pd.pivot_table(df1, index=['ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'DAY_TYPE'], columns=["TIME_PER_HOUR"], aggfunc={'TOTAL_TRIPS': np.sum})
+df1 = pd.pivot_table(df1, index=['ORIGIN_PT_CODE', 'DESTINATION_PT_CODE', 'DAY_TYPE'], columns=["TIME_PER_HOUR"], aggfunc={'TOTAL_TRIPS': "sum"})
 
 df.to_csv(os.path.join(os.getcwd(), "processed_data", month, "origin_destination_train_" + month + "_summary_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
 df1.to_csv(os.path.join(os.getcwd(), "processed_data", month, "origin_destination_train_" + month + "_byhour_" + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ".csv"))
