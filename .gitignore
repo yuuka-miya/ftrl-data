@@ -12,3 +12,4 @@ analysis/graphs
 .ipynb_checkpoints
 downloader/
 !downloader/downloader.py
+*.png

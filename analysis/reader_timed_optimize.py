@@ -45,6 +45,10 @@ interchange_codes = {
     #hijack to fix LTA forgetting to merge DT10/TE11
     "DT10": "DT10/TE11",
     "TE11": "DT10/TE11",
+
+    #because LTA decided to renumber the CCL6 stations
+    "NS27/CE2/TE20": "NS27/CC33/TE20",
+    "CE1/DT16": "CC34/DT16",
     "TE14": "NS22",
     "TE17": "EW16",
     "TE20": "NS27"

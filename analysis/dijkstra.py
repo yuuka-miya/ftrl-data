@@ -70,6 +70,7 @@ for u in interchange_nodes:
     
 import matplotlib.pyplot as plt
 pos = nx.kamada_kawai_layout(graph, scale=10)  # positions for all nodes
+fig, ax = plt.subplots(figsize=(50, 10))
 
 # nodes
 nx.draw_networkx_nodes(graph, pos, node_size=5)
@@ -81,6 +82,5 @@ nx.draw_networkx_edges(graph, pos)
 # labels
 nx.draw_networkx_labels(graph, pos, font_size=5, font_family="sans-serif")
 
-plt.axis("off")
-plt.figure(1, figsize=(500,1000))
-plt.savefig("graph_tel3.png", dpi=500)
+ax.axis("off")
+fig.savefig("graph_ccl6.png", dpi=500)
